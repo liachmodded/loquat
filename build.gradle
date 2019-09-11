@@ -26,10 +26,7 @@ dependencies {
     modCompile "net.fabricmc:fabric-loader:${project.loaderVersion}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    // modCompile "net.fabricmc.fabric-api:fabric-api:${project.apiVersion}"
-
-    // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-    // You may need to force-disable transitiveness on them.
+    modCompile "net.fabricmc.fabric-api:fabric-api:${project.apiVersion}"
 }
 
 sourceSets {
@@ -40,6 +37,12 @@ sourceSets {
         compileClasspath += configurations.minecraftNamed
     }
     data {
+        compileClasspath += sourceSets.code.compileClasspath
+        compileClasspath += sourceSets.code.output
+        runtimeClasspath += sourceSets.code.compileClasspath
+        runtimeClasspath += sourceSets.code.output
+    }
+    main {
         compileClasspath += sourceSets.code.compileClasspath
         compileClasspath += sourceSets.code.output
         runtimeClasspath += sourceSets.code.compileClasspath
@@ -69,7 +72,8 @@ tasks.withType(Javadoc) {
             'http://asm.ow2.org/asm50/javadoc/user/',
             'https://docs.oracle.com/javase/8/docs/api/',
             'http://jenkins.liteloader.com/job/Mixin/javadoc/',
-            'https://logging.apache.org/log4j/2.x/log4j-api/apidocs/'
+            'https://logging.apache.org/log4j/2.x/log4j-api/apidocs/',
+            'https://repo.karuslabs.com/repository/brigadier/'
             // Need to add minecraft jd publication once there is one available
     )
 
@@ -125,7 +129,7 @@ processResources {
 // if it is present.
 // If you remove this task, sources will not be generated.
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
+    archiveClassifier.set "sources"
     from sourceSets.code.allSource
 }
 
@@ -134,7 +138,7 @@ task javadocs(type: Javadoc) {
 }
 
 task javadocsJar(type: Jar, dependsOn: javadocs) {
-    classifier = "javadocs"
+    archiveClassifier.set "javadocs"
     from javadocs.destinationDir
 }
 

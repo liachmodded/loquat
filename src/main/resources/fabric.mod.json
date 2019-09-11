@@ -1,32 +1,32 @@
 {
   "schemaVersion": 1,
-  "id": "doublecart",
+  "id": "loquat",
   "version": "${version}",
-
-  "name": "double cart",
+  "name": "loquat",
   "description": "${description}",
   "authors": [
     "liach"
   ],
   "contact": {
-    "homepage": "https://github.com/liachmodded/doublecart",
-    "sources": "https://github.com/liachmodded/doublecart"
+    "homepage": "https://github.com/liachmodded/loquat",
+    "issues": "https://github.com/liachmodded/loquat",
+    "sources": "https://github.com/liachmodded/loquat"
   },
 
   "license": "MPL-2.0",
-  "icon": "assets/doublecart/icon.png",
+  "icon": "assets/loquat/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.github.liachmodded.doublecart.DoubleCartEntry"
+      "com.github.liachmodded.loquat.Loquat"
     ]
   },
   "mixins": [
-    "doublecart.mixins.json"
+    "loquat.mixins.json"
   ],
 
-  "requires": {
+  "depends": {
     "fabricloader": ">=0.6.0",
     "minecraft": ">=1.15-"
   }

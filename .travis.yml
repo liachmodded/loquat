@@ -15,7 +15,6 @@ cache:
 jobs:
   include:
   - stage: build
-    install: chmod +x ./gradlew
     script: "./gradlew build -S -i"
   - stage: deploy
     install: true
@@ -40,7 +39,7 @@ jobs:
 stages:
 - build
 - name: deploy
-  if: repo = liachmodded/carttemplate AND env(bintray_key) AND env(GITHUB_OAUTH_TOKEN)
+  if: repo = liachmodded/loquat AND env(bintray_key) AND env(GITHUB_OAUTH_TOKEN)
 env:
   global:
   - TERM=dumb
