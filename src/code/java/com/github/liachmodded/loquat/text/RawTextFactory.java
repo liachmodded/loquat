@@ -1,33 +1,69 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package com.github.liachmodded.loquat.text;
 
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 import java.util.NavigableSet;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public final class RawTextFactory implements TextFactory {
 
     @Override
-    public Text listSubcommands(String input, NavigableSet<CommandNode<?>> options) {
+    public Text listSubcommands(CommandContext<ServerCommandSource> context, NavigableSet<CommandNode<ServerCommandSource>> options) {
+        String input = context.getInput();
         Text ret = new LiteralText("Subcommands for ").append(new LiteralText(input).formatted(Formatting.GRAY)).append(":");
-        AtomicInteger colorIndex = new AtomicInteger(0);
-        for (CommandNode<?> node : options) {
-            Text nodeName = new LiteralText(node.getUsageText());
-            nodeName.styled(style -> {
-                if (node instanceof ArgumentCommandNode) {
-                    style.setColor(TextFactory.ARGUMENT_FORMATS.get(colorIndex.getAndIncrement() % TextFactory.ARGUMENT_FORMATS.size()));
-                    style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input + " "));
-                } else {
+        for (CommandNode<ServerCommandSource> node : options) {
+            if (!node.getRequirement().test(context.getSource())) {
+                continue;
+            }
+            if (node instanceof ArgumentCommandNode) {
+                Suggestions suggestions;
+                try {
+                    suggestions = node.listSuggestions(context, new SuggestionsBuilder(input, input.length())).getNow(null);
+                } catch (CommandSyntaxException ex) {
+                    suggestions = null;
+                }
+                if (suggestions == null || suggestions.isEmpty()) {
+                    Text nodeName = new LiteralText(node.getUsageText());
+                    ret.append("\n").append(nodeName);
+                    continue;
+                }
+                for (Suggestion suggestion : suggestions.getList()) {
+                    Text argumentSuggestion = new LiteralText(suggestion.getText());
+                    argumentSuggestion.styled(style -> {
+                        style.setColor(Formatting.GRAY);
+                        style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input + " "));
+                        if (suggestion.getTooltip() != null) {
+                            style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.toText(suggestion.getTooltip())));
+                        }
+                    });
+                    ret.append("\n").append(argumentSuggestion);
+                }
+            } else {
+                Text nodeName = new LiteralText(node.getUsageText());
+                nodeName.styled(style -> {
                     style.setColor(Formatting.GRAY);
                     style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input + " " + node.getName()));
-                }
-            });
-            ret.append("\n").append(nodeName);
+                });
+                ret.append("\n").append(nodeName);
+            }
         }
         return ret;
     }
@@ -40,5 +76,15 @@ public final class RawTextFactory implements TextFactory {
     @Override
     public Text reportFunctionInfo(Text info) {
         return info;
+    }
+
+    @Override
+    public Text nextPage() {
+        return new TranslatableText("spectatorMenu.next_page");
+    }
+
+    @Override
+    public Text previousPage() {
+        return new TranslatableText("spectatorMenu.previous_page");
     }
 }

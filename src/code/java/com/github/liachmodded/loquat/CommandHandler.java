@@ -1,3 +1,8 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package com.github.liachmodded.loquat;
 
 import com.mojang.brigadier.Command;
@@ -45,7 +50,7 @@ public final class CommandHandler {
     public int listSubcommands(CommandContext<ServerCommandSource> context) {
         CommandNode<ServerCommandSource> owner = SystemUtil.getLast(context.getNodes()).getNode();
 
-        Text reply = mod.getTextFactory().listSubcommands(context.getInput(), new TreeSet<>(owner.getChildren()));
+        Text reply = mod.getTextFactory().listSubcommands(context, new TreeSet<>(owner.getChildren()));
 
         context.getSource().sendFeedback(reply, false);
 

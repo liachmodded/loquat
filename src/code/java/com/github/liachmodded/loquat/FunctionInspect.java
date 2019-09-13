@@ -1,8 +1,12 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 package com.github.liachmodded.loquat;
 
 import com.github.liachmodded.loquat.mixin.CommandElementMixin;
 import com.github.liachmodded.loquat.text.TextFactory;
-import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.ImmutableStringReader;
 import com.mojang.brigadier.ParseResults;
@@ -26,7 +30,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public final class FunctionInspect {
@@ -86,11 +89,8 @@ public final class FunctionInspect {
             }
             Text text = new LiteralText(range.get(reader));
             if (each.getNode() instanceof ArgumentCommandNode) {
-                text.formatted(TextFactory.ARGUMENT_FORMATS.get(colorIndex));
+                text.formatted(TextFactory.getFormatting(colorIndex));
                 colorIndex++;
-                if (colorIndex >= TextFactory.ARGUMENT_FORMATS.size()) {
-                    colorIndex %= TextFactory.ARGUMENT_FORMATS.size();
-                }
             }
             ret.append(text);
             lastRangeEnd = range.getEnd();

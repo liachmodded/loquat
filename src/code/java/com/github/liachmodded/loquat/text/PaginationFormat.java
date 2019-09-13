@@ -3,14 +3,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-package com.github.liachmodded.loquat;
+package com.github.liachmodded.loquat.text;
 
-public interface LoquatServer {
+import net.minecraft.text.Text;
 
-    LoquatConvention getConvention();
+public interface PaginationFormat {
 
-    LoquatConvention createConvention(Loquat mod);
-
-    void clearConvention();
 
 }
