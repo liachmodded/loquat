@@ -7,6 +7,7 @@ package com.github.liachmodded.loquat.text;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -23,6 +24,8 @@ public interface TextFactory {
     static Formatting getFormatting(int index) {
         return ARGUMENT_FORMATS.get(index % ARGUMENT_FORMATS.size());
     }
+
+    Text renderCommandChain(String input, List<? extends ParsedCommandNode<?>> context);
 
     Text listSubcommands(CommandContext<ServerCommandSource> context, NavigableSet<CommandNode<ServerCommandSource>> nodes);
 

@@ -6,6 +6,8 @@
 package com.github.liachmodded.loquat.text;
 
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.context.ParsedCommandNode;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -21,14 +23,40 @@ import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
+import java.util.List;
 import java.util.NavigableSet;
 
 public final class RawTextFactory implements TextFactory {
 
     @Override
+    public Text renderCommandChain(String input, List<? extends ParsedCommandNode<?>> nodes) {
+        Text ret = new LiteralText("").formatted(Formatting.GRAY);
+        int colorIndex = 0;
+        int lastRangeEnd = 0;
+        for (ParsedCommandNode<?> each : nodes) {
+            StringRange range = each.getRange();
+            if (lastRangeEnd < range.getStart()) {
+                ret.append(input.substring(lastRangeEnd, range.getStart()));
+            }
+            lastRangeEnd = range.getEnd();
+            Text text = new LiteralText(range.get(input));
+            if (each.getNode() instanceof ArgumentCommandNode) {
+                text.formatted(TextFactory.getFormatting(colorIndex));
+                colorIndex++;
+            }
+            text.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input.substring(0, range.getEnd()))));
+            ret.append(text);
+
+        }
+        return ret;
+    }
+
+    @Override
     public Text listSubcommands(CommandContext<ServerCommandSource> context, NavigableSet<CommandNode<ServerCommandSource>> options) {
         String input = context.getInput();
-        Text ret = new LiteralText("Subcommands for ").append(new LiteralText(input).formatted(Formatting.GRAY)).append(":");
+        Text ret = new LiteralText("Subcommands for ")
+                .append(renderCommandChain(input, context.getNodes()))
+                .formatted(Formatting.GRAY).append(":");
         for (CommandNode<ServerCommandSource> node : options) {
             if (!node.getRequirement().test(context.getSource())) {
                 continue;

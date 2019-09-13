@@ -6,18 +6,13 @@
 package com.github.liachmodded.loquat;
 
 import com.github.liachmodded.loquat.mixin.CommandElementMixin;
-import com.github.liachmodded.loquat.text.TextFactory;
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.ImmutableStringReader;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.context.ParsedCommandNode;
-import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -27,17 +22,18 @@ import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.concurrent.CompletableFuture;
 
 public final class FunctionInspect {
     private final CommandHandler commandHandler;
+    private final Loquat loquat;
     private final DynamicCommandExceptionType invalidFunctionExceptionType;
 
     public FunctionInspect(Loquat loquat) {
         this.commandHandler = loquat.getCommandHandler();
+        this.loquat = loquat;
         this.invalidFunctionExceptionType = new DynamicCommandExceptionType(loquat.getTextFactory()::reportInvalidFunctionId);
 
         init();
@@ -48,6 +44,7 @@ public final class FunctionInspect {
                 .executes(commandHandler::listSubcommands)
                 .then(
                         CommandManager.argument("function", IdentifierArgumentType.identifier())
+                                .requires(source -> source.hasPermissionLevel(2))
                                 .suggests(this::suggestFunctions)
                                 .executes(this::executeInspectFunction)
                 )
@@ -78,24 +75,7 @@ public final class FunctionInspect {
             return new LiteralText(element.toString());
         }
         ParseResults<ServerCommandSource> results = ((CommandElementMixin) element).getParsed();
-        ImmutableStringReader reader = results.getReader();
-        Text ret = new LiteralText("").formatted(Formatting.GRAY);
-        int colorIndex = 0;
-        int lastRangeEnd = 0;
-        for (ParsedCommandNode<ServerCommandSource> each : results.getContext().getNodes()) {
-            StringRange range = each.getRange();
-            if (lastRangeEnd < range.getStart()) {
-                ret.append(reader.getString().substring(lastRangeEnd, range.getStart()));
-            }
-            Text text = new LiteralText(range.get(reader));
-            if (each.getNode() instanceof ArgumentCommandNode) {
-                text.formatted(TextFactory.getFormatting(colorIndex));
-                colorIndex++;
-            }
-            ret.append(text);
-            lastRangeEnd = range.getEnd();
-        }
-        return ret;
+        return loquat.getTextFactory().renderCommandChain(results.getReader().getString(), results.getContext().getNodes());
     }
 
 }
