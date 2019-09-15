@@ -25,28 +25,36 @@ import net.minecraft.util.Formatting;
 
 import java.util.List;
 import java.util.NavigableSet;
+import java.util.function.Function;
 
 public final class RawTextFactory implements TextFactory {
 
     @Override
-    public Text renderCommandChain(String input, List<? extends ParsedCommandNode<?>> nodes) {
+    public <T> Text renderCommandChain(String input, T context, Function<? super T, ? extends T> childGetter,
+            Function<? super T, ? extends List<? extends ParsedCommandNode<?>>> nodeGetter) {
         Text ret = new LiteralText("").formatted(Formatting.GRAY);
         int colorIndex = 0;
         int lastRangeEnd = 0;
-        for (ParsedCommandNode<?> each : nodes) {
-            StringRange range = each.getRange();
-            if (lastRangeEnd < range.getStart()) {
-                ret.append(input.substring(lastRangeEnd, range.getStart()));
-            }
-            lastRangeEnd = range.getEnd();
-            Text text = new LiteralText(range.get(input));
-            if (each.getNode() instanceof ArgumentCommandNode) {
-                text.formatted(TextFactory.getFormatting(colorIndex));
-                colorIndex++;
-            }
-            text.styled(style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, input.substring(0, range.getEnd()))));
-            ret.append(text);
+        for (; context != null; context = childGetter.apply(context)) {
+            for (ParsedCommandNode<?> each : nodeGetter.apply(context)) {
+                StringRange range = each.getRange();
+                if (lastRangeEnd < range.getStart()) {
+                    ret.append(input.substring(lastRangeEnd, range.getStart()));
+                }
+                lastRangeEnd = range.getEnd();
+                Text text = new LiteralText(range.get(input));
+                if (each.getNode() instanceof ArgumentCommandNode) {
+                    text.formatted(TextFactory.getFormatting(colorIndex));
+                    colorIndex++;
+                }
+                text.styled(style -> {
+                    String partialCommand = input.substring(0, range.getEnd());
+                    style.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, partialCommand));
+                    style.setInsertion(partialCommand);
+                });
+                ret.append(text);
 
+            }
         }
         return ret;
     }
@@ -55,7 +63,7 @@ public final class RawTextFactory implements TextFactory {
     public Text listSubcommands(CommandContext<ServerCommandSource> context, NavigableSet<CommandNode<ServerCommandSource>> options) {
         String input = context.getInput();
         Text ret = new LiteralText("Subcommands for ")
-                .append(renderCommandChain(input, context.getNodes()))
+                .append(renderCommandChain(input, context))
                 .formatted(Formatting.GRAY).append(":");
         for (CommandNode<ServerCommandSource> node : options) {
             if (!node.getRequirement().test(context.getSource())) {

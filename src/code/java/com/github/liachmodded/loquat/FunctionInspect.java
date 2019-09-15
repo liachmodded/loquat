@@ -75,7 +75,7 @@ public final class FunctionInspect {
             return new LiteralText(element.toString());
         }
         ParseResults<ServerCommandSource> results = ((CommandElementMixin) element).getParsed();
-        return loquat.getTextFactory().renderCommandChain(results.getReader().getString(), results.getContext().getNodes());
+        return loquat.getTextFactory().renderCommandChain(results.getReader().getString(), results.getContext());
     }
 
 }
