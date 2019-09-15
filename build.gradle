@@ -26,9 +26,7 @@ dependencies {
     modCompile "net.fabricmc:fabric-loader:${project.loaderVersion}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    modCompile("net.fabricmc.fabric-api:fabric-api:${project.apiVersion}") {
-        exclude module: "fabric-events-interaction-v0"
-    }
+    modCompile("net.fabricmc.fabric-api:fabric-api:${project.apiVersion}")
 
     annotationProcessor 'net.fabricmc:fabric-mixin-compile-extensions:0.1.0.+'
 }

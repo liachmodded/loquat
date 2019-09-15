@@ -71,6 +71,7 @@ public final class Loquat implements ModInitializer {
         ServerStartCallback.EVENT.register(this::onServerStart);
         ServerStopCallback.EVENT.register(this::onServerStop);
         new FunctionInspect(this);
+        new ItemShowOff(this);
     }
 
     private void onServerStart(MinecraftServer server) {

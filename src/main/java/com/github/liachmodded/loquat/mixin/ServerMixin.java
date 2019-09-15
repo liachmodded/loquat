@@ -35,7 +35,9 @@ public abstract class ServerMixin extends NonBlockingThreadExecutor<ServerTask> 
 
     @Override
     public void clearConvention() {
-        this.convention.close();
+        if (this.convention != null) {
+            this.convention.close();
+        }
         this.convention = null;
     }
 }

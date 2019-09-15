@@ -34,7 +34,7 @@ public final class FunctionInspect {
     public FunctionInspect(Loquat loquat) {
         this.commandHandler = loquat.getCommandHandler();
         this.loquat = loquat;
-        this.invalidFunctionExceptionType = new DynamicCommandExceptionType(loquat.getTextFactory()::reportInvalidFunctionId);
+        this.invalidFunctionExceptionType = new DynamicCommandExceptionType(loquat.getTextFactory()::reportInvalidSlotName);
 
         init();
     }

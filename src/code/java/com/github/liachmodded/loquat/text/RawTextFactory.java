@@ -97,6 +97,11 @@ public final class RawTextFactory implements TextFactory {
     }
 
     @Override
+    public Text reportInvalidSlotName(Object id) {
+        return new LiteralText("Invalid slot name \"").append(new LiteralText(id.toString()).formatted(Formatting.GRAY)).append("\"!");
+    }
+
+    @Override
     public Text reportInvalidFunctionId(Object id) {
         return new LiteralText("Invalid function id \"").append(new LiteralText(id.toString()).formatted(Formatting.GRAY)).append("\"!");
     }

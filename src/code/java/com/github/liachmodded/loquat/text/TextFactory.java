@@ -31,6 +31,8 @@ public interface TextFactory {
 
     Text reportInvalidFunctionId(Object id);
 
+    Text reportInvalidSlotName(Object id);
+
     Text reportFunctionInfo(Text info);
 
     Text nextPage();
