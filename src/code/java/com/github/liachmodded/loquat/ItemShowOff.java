@@ -70,7 +70,7 @@ public final class ItemShowOff {
 
         if (!stack.isEmpty()) {
             source.getMinecraftServer().getPlayerManager()
-                    .sendToAll(new TranslatableText("chat.type.announcement", source.getDisplayName(), stack.toHoverableText()));
+                    .sendToAll(new TranslatableText("chat.type.text", source.getDisplayName(), stack.toHoverableText()));
         }
 
         return Command.SINGLE_SUCCESS;
