@@ -5,30 +5,29 @@
  */
 package com.github.liachmodded.loquat.text;
 
-import net.minecraft.text.Text;
-
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.text.Text;
 
 public interface Pagination {
 
-    int getPages();
+  int getPages();
 
-    Text render(int page);
+  Text render(int page);
 
-    interface Builder {
+  interface Builder {
 
-        default Builder lines(Iterable<? extends Text> pages) {
-            return lines(pages, Function.identity());
-        }
-
-        default Builder lineSuppliers(Iterable<Supplier<? extends Text>> pageSuppliers) {
-            return lines(pageSuppliers, Supplier::get);
-        }
-
-        <T> Builder lines(Iterable<? extends T> content, Function<? super T, ? extends Text> function);
-
-        Pagination build(PaginationFormat format);
+    default Builder lines(Iterable<? extends Text> pages) {
+      return lines(pages, Function.identity());
     }
+
+    default Builder lineSuppliers(Iterable<Supplier<? extends Text>> pageSuppliers) {
+      return lines(pageSuppliers, Supplier::get);
+    }
+
+    <T> Builder lines(Iterable<? extends T> content, Function<? super T, ? extends Text> function);
+
+    Pagination build(PaginationFormat format);
+  }
 
 }

@@ -5,8 +5,6 @@
  */
 package com.github.liachmodded.loquat.text;
 
-import net.minecraft.text.Text;
-
 public interface PaginationFormat {
 
 

@@ -12,10 +12,8 @@
     "issues": "https://github.com/liachmodded/loquat/issues",
     "sources": "https://github.com/liachmodded/loquat"
   },
-
   "license": "MPL-2.0",
   "icon": "assets/loquat/icon.png",
-
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -25,7 +23,6 @@
   "mixins": [
     "loquat.mixins.json"
   ],
-
   "depends": {
     "fabricloader": ">=0.6.0",
     "minecraft": ">=1.15-"

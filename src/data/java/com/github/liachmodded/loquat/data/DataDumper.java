@@ -5,20 +5,19 @@
  */
 package com.github.liachmodded.loquat.data;
 
-import net.minecraft.data.DataGenerator;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import net.minecraft.data.DataGenerator;
 
 public final class DataDumper {
 
-    public static void main(String... args) throws IOException {
-        DataGenerator dataGenerator = new DataGenerator(new File(args[0]).toPath(), Collections.emptyList());
+  public static void main(String... args) throws IOException {
+    DataGenerator dataGenerator = new DataGenerator(new File(args[0]).toPath(), Collections.emptyList());
 
 //        dataGenerator.install(new CartAdvancementProvider(dataGenerator));
 
-        dataGenerator.run();
-    }
+    dataGenerator.run();
+  }
 
 }

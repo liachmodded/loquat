@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(CommandFunction.CommandElement.class)
 public interface CommandElementMixin {
 
-    @Accessor ParseResults<ServerCommandSource> getParsed();
+  @Accessor
+  ParseResults<ServerCommandSource> getParsed();
 
 }

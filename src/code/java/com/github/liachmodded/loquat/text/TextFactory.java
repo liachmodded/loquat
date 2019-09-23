@@ -10,44 +10,46 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
+import java.util.List;
+import java.util.NavigableSet;
+import java.util.function.Function;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.List;
-import java.util.NavigableSet;
-import java.util.function.Function;
-
 public interface TextFactory {
 
-    List<Formatting> ARGUMENT_FORMATS = ImmutableList.of(Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN,
-            Formatting.LIGHT_PURPLE, Formatting.GOLD);
+  List<Formatting> ARGUMENT_FORMATS = ImmutableList.of(Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN,
+      Formatting.LIGHT_PURPLE, Formatting.GOLD);
 
-    static Formatting getFormatting(int index) {
-        return ARGUMENT_FORMATS.get(index % ARGUMENT_FORMATS.size());
-    }
+  static Formatting getFormatting(int index) {
+    return ARGUMENT_FORMATS.get(index % ARGUMENT_FORMATS.size());
+  }
 
-    default Text renderCommandChain(String input, CommandContext<?> context) {
-        return this.renderCommandChain(input, context, CommandContext::getChild, CommandContext::getNodes);
-    }
+  default Text renderCommandChain(String input, CommandContext<?> context) {
+    return this.renderCommandChain(input, context, CommandContext::getChild, CommandContext::getNodes);
+  }
 
-    default Text renderCommandChain(String input, CommandContextBuilder<?> context) {
-        return this.renderCommandChain(input, context, CommandContextBuilder::getChild, CommandContextBuilder::getNodes);
-    }
+  default Text renderCommandChain(String input, CommandContextBuilder<?> context) {
+    return this.renderCommandChain(input, context, CommandContextBuilder::getChild, CommandContextBuilder::getNodes);
+  }
 
-    <T> Text renderCommandChain(String input, T nodes, Function<? super T, ? extends T> childGetter,
-            Function<? super T, ? extends List<? extends ParsedCommandNode<?>>> nodeGetter);
+  <T> Text renderCommandChain(String input, T nodes, Function<? super T, ? extends T> childGetter,
+      Function<? super T, ? extends List<? extends ParsedCommandNode<?>>> nodeGetter);
 
-    Text listSubcommands(CommandContext<ServerCommandSource> context, NavigableSet<CommandNode<ServerCommandSource>> nodes);
+  Text listSubcommands(CommandContext<ServerCommandSource> context, NavigableSet<CommandNode<ServerCommandSource>> nodes);
 
-    Text reportInvalidFunctionId(Object id);
+  Text reportInvalidFunctionId(Object id);
 
-    Text reportInvalidSlotName(Object id);
+  Text reportInvalidSlotName(Object id);
 
-    Text reportFunctionInfo(Text info);
+  Text reportFunctionInfo(Text info);
 
-    Text nextPage();
+  Text nextPage();
 
-    Text previousPage();
+  Text previousPage();
+
+  Text reportWrongNumberOfInput(Object count);
+  Text reportInvalidPipelineOperator(Object id);
 
 }
