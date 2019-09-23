@@ -22,6 +22,7 @@ import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.command.arguments.NbtPathArgumentType;
 import net.minecraft.command.arguments.NbtPathArgumentType.NbtPath;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
@@ -32,7 +33,7 @@ import net.minecraft.util.Identifier;
 
 public final class NbtPipeline {
 
-  private static final Operation NOOP = t -> t;
+  private static final Operation NOOP = Tag::copy;
   private final DynamicCommandExceptionType incorrectNumberOfInput;
   private final DynamicCommandExceptionType invalidOperator;
 
@@ -119,12 +120,15 @@ public final class NbtPipeline {
       throw incorrectNumberOfInput.create(inputCollection.size());
     }
 
+    CompoundTag targetTag = target.getTag();
+
     Tag input = inputCollection.get(0);
     Tag output = operator.process(input); // Fail fast on command error
 
-    int ret = targetPath.put(target.getTag(), () -> output);
+    int ret = targetPath.put(targetTag, () -> output);
 
-    context.getSource().sendFeedback(new LiteralText("Successfully processed and set to " + ret + "targets!"), false);
+    target.setTag(targetTag);
+    context.getSource().sendFeedback(new LiteralText("Successfully processed and set to " + ret + " target(s)!"), false);
 
     return ret;
   }

@@ -5,7 +5,9 @@
  */
 package com.github.liachmodded.loquat;
 
+import com.github.liachmodded.loquat.nbt.JsonToNbtOperation;
 import com.github.liachmodded.loquat.nbt.NbtPipeline;
+import com.github.liachmodded.loquat.nbt.NbtToJsonOperation;
 import com.github.liachmodded.loquat.nbt.UuidCompoundToStringOperation;
 import com.github.liachmodded.loquat.nbt.UuidStringToCompoundOperation;
 import com.github.liachmodded.loquat.text.RawTextFactory;
@@ -84,6 +86,8 @@ public final class Loquat implements ModInitializer {
   private void registerPipelines() {
     nbtPipeline.register(name("uuid_string_to_compound"), new UuidStringToCompoundOperation());
     nbtPipeline.register(name("uuid_compound_to_string"), new UuidCompoundToStringOperation());
+    nbtPipeline.register(name("nbt_to_json"), new NbtToJsonOperation());
+    nbtPipeline.register(name("json_to_nbt"), new JsonToNbtOperation());
   }
 
   private void onServerStart(MinecraftServer server) {

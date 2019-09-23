@@ -18,7 +18,7 @@ public final class UuidCompoundToStringOperation implements Operation {
   @Override
   public Tag process(Tag input) throws CommandSyntaxException {
     if (!(input instanceof CompoundTag)) {
-      throw Operation.INVALID_TAG_TYPE.create();
+      throw INVALID_TAG_TYPE.create();
     }
 
     UUID result = TagHelper.deserializeUuid((CompoundTag) input);
