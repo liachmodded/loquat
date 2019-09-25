@@ -10,6 +10,7 @@ import com.github.liachmodded.loquat.nbt.NbtPipeline;
 import com.github.liachmodded.loquat.nbt.NbtToJsonOperation;
 import com.github.liachmodded.loquat.nbt.UuidCompoundToStringOperation;
 import com.github.liachmodded.loquat.nbt.UuidStringToCompoundOperation;
+import com.github.liachmodded.loquat.resource.ResourceFeature;
 import com.github.liachmodded.loquat.text.RawTextFactory;
 import com.github.liachmodded.loquat.text.TextFactory;
 import net.fabricmc.api.ModInitializer;
@@ -34,6 +35,7 @@ public final class Loquat implements ModInitializer {
   private TextFactory textFactory;
   private CommandHandler commandHandler;
   private NbtPipeline nbtPipeline;
+  private ResourceFeature resourceFeature;
 
   /** Convenience method to create a identifier for loquat. */
   public static Identifier name(String name) {
@@ -66,6 +68,10 @@ public final class Loquat implements ModInitializer {
     return commandHandler;
   }
 
+  public ResourceFeature getResourceFeature() {
+    return resourceFeature;
+  }
+
   @Override
   public void onInitialize() {
     this.modLoader = FabricLoader.getInstance();
@@ -79,6 +85,7 @@ public final class Loquat implements ModInitializer {
     new FunctionInspect(this);
     new ItemShowOff(this);
     this.nbtPipeline = new NbtPipeline(this);
+    this.resourceFeature = new ResourceFeature(this);
 
     registerPipelines();
   }

@@ -52,4 +52,6 @@ public interface TextFactory {
   Text reportWrongNumberOfInput(Object count);
   Text reportInvalidPipelineOperator(Object id);
 
+  Text makeError(Text original);
+
 }

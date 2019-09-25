@@ -137,4 +137,9 @@ public final class RawTextFactory implements TextFactory {
   public Text reportInvalidPipelineOperator(Object id) {
     return new LiteralText("Invalid nbt operator id \"").append(new LiteralText(id.toString()).formatted(Formatting.GRAY)).append("\"!");
   }
+
+  @Override
+  public Text makeError(Text original) {
+    return (new LiteralText("")).append(original).formatted(Formatting.RED);
+  }
 }
