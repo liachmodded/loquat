@@ -31,7 +31,8 @@ import net.minecraft.world.World;
 public final class ResourceFeature implements UseItemCallback {
 
   private final Loquat mod;
-  private NbtPath path;
+
+  private NbtPath recordingItemPath;
   private ItemStack endRecordingItem;
 
   public ResourceFeature(Loquat mod) {
@@ -41,8 +42,13 @@ public final class ResourceFeature implements UseItemCallback {
   }
 
   private void init() {
+    registerCommand();
+    initFunctionRecording();
+  }
+  
+  private void initFunctionRecording() {
     try {
-      path = NbtPathArgumentType.nbtPath().parse(new StringReader("loquat.functionCollector"));
+      recordingItemPath = NbtPathArgumentType.nbtPath().parse(new StringReader("loquat.functionCollector"));
     } catch (CommandSyntaxException ex) {
       throw new RuntimeException(ex);
     }
@@ -51,8 +57,6 @@ public final class ResourceFeature implements UseItemCallback {
 
     endRecordingItem = new ItemStack(Items.HEART_OF_THE_SEA);
     endRecordingItem.getOrCreateSubTag("loquat").putBoolean("functionCollector", true);
-
-    registerCommand();
   }
 
   private void registerCommand() {
@@ -79,17 +83,17 @@ public final class ResourceFeature implements UseItemCallback {
   public TypedActionResult<ItemStack> interact(PlayerEntity player, World world, Hand hand) {
     ItemStack stack = player.getStackInHand(hand);
     if (world.isClient) {
-      return TypedActionResult.method_22430(stack);
+      return TypedActionResult.pass(stack);
     }
 
-    if (TagEvaluator.getBoolean(path, stack.getTag())) {
+    if (TagEvaluator.getBoolean(recordingItemPath, stack.getTag())) {
       ResourceServerAddon addon = LoquatConvention.from(world.getServer()).getResourceFeatureServerAddon();
       addon.endCollection((ServerPlayerEntity) player);
       stack.decrement(1);
-      return TypedActionResult.method_22428(stack);
+      return TypedActionResult.successWithSwing(stack);
     }
 
-    return TypedActionResult.method_22430(stack);
+    return TypedActionResult.pass(stack);
   }
 
   private int startCommandRecording(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

@@ -9,10 +9,10 @@ import com.github.liachmodded.loquat.nbt.NbtPipeline.Operation;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import java.util.UUID;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.TagHelper;
 
 public final class UuidStringToCompoundOperation implements Operation {
 
@@ -28,7 +28,7 @@ public final class UuidStringToCompoundOperation implements Operation {
     String content = input.asString();
     try {
       UUID uuid = UUID.fromString(content);
-      return TagHelper.serializeUuid(uuid);
+      return NbtHelper.fromUuid(uuid);
     } catch (IllegalArgumentException ex) {
       throw INVALID_UUID.create(content);
     }

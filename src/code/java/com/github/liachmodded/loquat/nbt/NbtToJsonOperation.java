@@ -17,6 +17,6 @@ public final class NbtToJsonOperation implements Operation {
 
   @Override
   public Tag process(Tag input) throws CommandSyntaxException {
-    return new StringTag(new Dynamic<>(NbtOps.INSTANCE, input).convert(JsonOps.INSTANCE).getValue().toString());
+    return StringTag.of(new Dynamic<>(NbtOps.INSTANCE, input).convert(JsonOps.INSTANCE).getValue().toString());
   }
 }

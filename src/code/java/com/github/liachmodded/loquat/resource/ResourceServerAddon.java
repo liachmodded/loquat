@@ -12,11 +12,16 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
@@ -28,15 +33,20 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Identifier;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public final class ResourceServerAddon {
 
+  private static final Logger LOGGER = LogManager.getLogger("Loquat resource addon");
   private final LoquatConvention convention;
   private final TextFactory textFactory;
   private final CommandFunctionManager commandFunctionManager;
   private final CommandDispatcher<ServerCommandSource> commandDispatcher;
   private final MinecraftServer server;
   private final Map<UUID, FunctionDraft> drafts = new HashMap<>();
+  
+  private String currentPackDraft;
 
   public ResourceServerAddon(LoquatConvention convention) {
     this.convention = convention;
@@ -81,6 +91,19 @@ public final class ResourceServerAddon {
       }
     }
 
+    Path path = server.getFile("buildingpack").toPath();
+    Path writeTo = path.resolve(ResourceType.SERVER_DATA.getName()).resolve(draft.id.getNamespace()).resolve("functions")
+        .resolve(draft.id.getPath() + ".mcfunction");
+
+    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(writeTo))) {
+      for (String line : draft.lines) {
+        writer.println(line);
+      }
+      player.sendMessage(new LiteralText("Function written, will be effective on next reload."));
+    } catch (IOException ex) {
+      player.sendMessage(new LiteralText("Failed to write function! " + ex.getMessage()));
+      LOGGER.error("Failed to write function {} to {}", draft.id, writeTo, ex);
+    }
     // TODO actually write to a pack!
   }
 
