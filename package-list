@@ -1,5 +1,8 @@
 com.github.liachmodded.loquat
+com.github.liachmodded.loquat.event
 com.github.liachmodded.loquat.mixin
 com.github.liachmodded.loquat.nbt
 com.github.liachmodded.loquat.resource
+com.github.liachmodded.loquat.resource.editor
+com.github.liachmodded.loquat.resource.function
 com.github.liachmodded.loquat.text
