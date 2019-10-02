@@ -5,14 +5,16 @@
  */
 package com.github.liachmodded.loquat;
 
-import com.github.liachmodded.loquat.resource.ResourceServerAddon;
+import com.github.liachmodded.loquat.resource.editor.DataPackEditorServerAddon;
+import com.github.liachmodded.loquat.resource.function.FunctionRecordingServerAddon;
 import net.minecraft.server.MinecraftServer;
 
 public final class LoquatConvention implements AutoCloseable {
 
   private final Loquat loquat;
   private final MinecraftServer server;
-  private ResourceServerAddon resourceFeatureServerAddon;
+  private FunctionRecordingServerAddon functionRecorder;
+  private DataPackEditorServerAddon dataPackEditor;
 
   public static LoquatConvention from(MinecraftServer server) {
     return ((LoquatServer) server).getConvention();
@@ -33,12 +35,17 @@ public final class LoquatConvention implements AutoCloseable {
     return server;
   }
 
-  public ResourceServerAddon getResourceFeatureServerAddon() {
-    return resourceFeatureServerAddon;
+  public FunctionRecordingServerAddon getFunctionRecorder() {
+    return functionRecorder;
+  }
+
+  public DataPackEditorServerAddon getDataPackEditor() {
+    return dataPackEditor;
   }
 
   private void init() {
-    resourceFeatureServerAddon = new ResourceServerAddon(this);
+    functionRecorder = new FunctionRecordingServerAddon(this);
+    dataPackEditor = new DataPackEditorServerAddon(this);
   }
 
   @Override

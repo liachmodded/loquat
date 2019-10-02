@@ -5,6 +5,7 @@
  */
 package com.github.liachmodded.loquat;
 
+import com.github.liachmodded.loquat.event.PreDataPackLoadCallback;
 import com.github.liachmodded.loquat.nbt.JsonToNbtOperation;
 import com.github.liachmodded.loquat.nbt.NbtPipeline;
 import com.github.liachmodded.loquat.nbt.NbtToJsonOperation;
@@ -80,7 +81,7 @@ public final class Loquat implements ModInitializer {
     this.commandHandler = new CommandHandler(this);
     CommandRegistry.INSTANCE.register(false, commandHandler::registerCommands);
 
-    ServerStartCallback.EVENT.register(this::onServerStart);
+    PreDataPackLoadCallback.EVENT.register(this::onServerStart);
     ServerStopCallback.EVENT.register(this::onServerStop);
     new FunctionInspect(this);
     new ItemShowOff(this);

@@ -6,7 +6,7 @@
 package com.github.liachmodded.loquat.mixin;
 
 import com.github.liachmodded.loquat.LoquatConvention;
-import com.github.liachmodded.loquat.resource.ResourceServerAddon;
+import com.github.liachmodded.loquat.resource.function.FunctionRecordingServerAddon;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -48,7 +48,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
   @Inject(method = "executeCommand(Ljava/lang/String;)V", at = @At("HEAD"), cancellable = true)
   public void onExecuteCommand(String command, CallbackInfo ci) {
-    ResourceServerAddon addon = LoquatConvention.from(server).getResourceFeatureServerAddon();
+    FunctionRecordingServerAddon addon = LoquatConvention.from(server).getFunctionRecorder();
     if (addon.isCollecting(player)) {
       addon.collectFunction(player, command);
       ci.cancel();

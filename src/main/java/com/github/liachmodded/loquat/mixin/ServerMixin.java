@@ -8,7 +8,8 @@ package com.github.liachmodded.loquat.mixin;
 import com.github.liachmodded.loquat.Loquat;
 import com.github.liachmodded.loquat.LoquatConvention;
 import com.github.liachmodded.loquat.LoquatServer;
-import com.github.liachmodded.loquat.resource.ResourceFeaturePackProvider;
+import com.github.liachmodded.loquat.event.PreDataPackLoadCallback;
+import com.github.liachmodded.loquat.resource.editor.DataPackEditorPackProvider;
 import java.io.File;
 import net.minecraft.resource.ResourcePackContainer;
 import net.minecraft.resource.ResourcePackContainerManager;
@@ -26,16 +27,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MinecraftServer.class)
 public abstract class ServerMixin extends NonBlockingThreadExecutor<ServerTask> implements LoquatServer {
 
-  @Shadow @Final private ResourcePackContainerManager<ResourcePackContainer> dataPackContainerManager;
+  @Shadow
+  @Final
+  private ResourcePackContainerManager<ResourcePackContainer> dataPackContainerManager;
   private LoquatConvention convention;
 
   public ServerMixin(String string_1) {
     super(string_1);
   }
-  
+
+  @Inject(method = "loadWorldDataPacks", at = @At("HEAD"))
+  public void startWorldDataPackLoad(File file, LevelProperties lp, CallbackInfo ci) {
+    PreDataPackLoadCallback.EVENT.invoker().beforeDataPackProvision((MinecraftServer) (Object) this);
+  }
+
   @Inject(method = "loadWorldDataPacks", at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/ResourcePackContainerManager;callCreators()V"))
   public void addPackProvider(File file, LevelProperties lp, CallbackInfo ci) {
-    dataPackContainerManager.addCreator(new ResourceFeaturePackProvider((MinecraftServer) (Object) this));
+    dataPackContainerManager.addCreator(new DataPackEditorPackProvider(file, (MinecraftServer) (Object) this));
   }
 
   @Override

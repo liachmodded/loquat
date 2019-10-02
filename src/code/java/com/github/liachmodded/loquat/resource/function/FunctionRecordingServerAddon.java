@@ -3,7 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-package com.github.liachmodded.loquat.resource;
+package com.github.liachmodded.loquat.resource.function;
 
 import com.github.liachmodded.loquat.LoquatConvention;
 import com.github.liachmodded.loquat.mixin.CommandElementMixin;
@@ -36,7 +36,7 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public final class ResourceServerAddon {
+public final class FunctionRecordingServerAddon {
 
   private static final Logger LOGGER = LogManager.getLogger("Loquat resource addon");
   private final LoquatConvention convention;
@@ -48,7 +48,7 @@ public final class ResourceServerAddon {
   
   private String currentPackDraft;
 
-  public ResourceServerAddon(LoquatConvention convention) {
+  public FunctionRecordingServerAddon(LoquatConvention convention) {
     this.convention = convention;
     this.server = convention.getServer();
     this.commandFunctionManager = server.getCommandFunctionManager();
