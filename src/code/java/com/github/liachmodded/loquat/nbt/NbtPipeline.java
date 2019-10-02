@@ -5,6 +5,13 @@
  */
 package com.github.liachmodded.loquat.nbt;
 
+import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
+import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
+import static net.minecraft.command.arguments.NbtPathArgumentType.getNbtPath;
+import static net.minecraft.command.arguments.NbtPathArgumentType.nbtPath;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 import com.github.liachmodded.loquat.Loquat;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -19,12 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.DataCommandObject;
-import net.minecraft.command.arguments.IdentifierArgumentType;
-import net.minecraft.command.arguments.NbtPathArgumentType;
 import net.minecraft.command.arguments.NbtPathArgumentType.NbtPath;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
@@ -60,8 +64,8 @@ public final class NbtPipeline {
   }
 
   private void init() {
-    LiteralCommandNode<ServerCommandSource> root = CommandManager.literal("nbtpipeline")
-        .then(addTargetTypes(CommandManager.argument("operation", IdentifierArgumentType.identifier()).suggests(this::suggestTransformations)))
+    LiteralCommandNode<ServerCommandSource> root = literal("nbtpipeline")
+        .then(addTargetTypes(argument("operation", identifier()).suggests(this::suggestTransformations)))
         .build();
 
     mod.getCommandHandler().add(root);
@@ -87,7 +91,7 @@ public final class NbtPipeline {
   private ArgumentBuilder<ServerCommandSource, ?> addTargetPath(DataCommand.ObjectType targetType,
       ArgumentBuilder<ServerCommandSource, ?> targetTypeNode) {
     targetTypeNode.then(
-        addSourceTypes(targetType, CommandManager.argument("targetPath", NbtPathArgumentType.nbtPath()))
+        addSourceTypes(targetType, argument("targetPath", nbtPath()))
     );
 
     return targetTypeNode;
@@ -96,7 +100,7 @@ public final class NbtPipeline {
   private ArgumentBuilder<ServerCommandSource, ?> addSourcePath(DataCommand.ObjectType targetType, DataCommand.ObjectType sourceType,
       ArgumentBuilder<ServerCommandSource, ?> sourceTypeNode) {
     sourceTypeNode.then(
-        CommandManager.argument("sourcePath", NbtPathArgumentType.nbtPath()).executes(ctx -> runCommand(targetType, sourceType, ctx))
+        argument("sourcePath", nbtPath()).executes(ctx -> runCommand(targetType, sourceType, ctx))
     );
 
     return sourceTypeNode;
@@ -104,16 +108,16 @@ public final class NbtPipeline {
 
   private int runCommand(DataCommand.ObjectType targetType, DataCommand.ObjectType sourceType, CommandContext<ServerCommandSource> context)
       throws CommandSyntaxException {
-    Identifier id = IdentifierArgumentType.getIdentifier(context, "operation");
+    Identifier id = getIdentifier(context, "operation");
     Operation operator = operators.get(id);
     if (operator == null) {
       throw invalidOperator.create(id);
     }
 
     DataCommandObject target = targetType.getObject(context);
-    NbtPath targetPath = NbtPathArgumentType.getNbtPath(context, "targetPath");
+    NbtPath targetPath = getNbtPath(context, "targetPath");
     DataCommandObject source = sourceType.getObject(context);
-    NbtPath sourcePath = NbtPathArgumentType.getNbtPath(context, "sourcePath");
+    NbtPath sourcePath = getNbtPath(context, "sourcePath");
 
     List<Tag> inputCollection = sourcePath.get(source.getTag());
     if (inputCollection.size() != 1) {
