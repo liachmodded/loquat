@@ -5,6 +5,11 @@
  */
 package com.github.liachmodded.loquat;
 
+import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
+import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 import com.github.liachmodded.loquat.mixin.CommandElementMixin;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.ParseResults;
@@ -15,12 +20,9 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.command.arguments.IdentifierArgumentType;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.function.CommandFunction;
-import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -40,10 +42,10 @@ public final class FunctionInspect {
   }
 
   private void init() {
-    LiteralCommandNode<ServerCommandSource> node = CommandManager.literal("funcinspect")
+    LiteralCommandNode<ServerCommandSource> node = literal("funcinspect")
         .executes(commandHandler::listSubcommands)
         .then(
-            CommandManager.argument("function", IdentifierArgumentType.identifier())
+            argument("function", identifier())
                 .requires(source -> source.hasPermissionLevel(2))
                 .suggests(this::suggestFunctions)
                 .executes(this::executeInspectFunction)
@@ -58,10 +60,10 @@ public final class FunctionInspect {
   }
 
   private int executeInspectFunction(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-    Identifier id = IdentifierArgumentType.getIdentifier(context, "function");
+    Identifier id = getIdentifier(context, "function");
     ServerCommandSource source = context.getSource();
-    CommandFunctionManager functionManager = source.getMinecraftServer().getCommandFunctionManager();
-    CommandFunction function = functionManager.getFunction(id).orElseThrow(() -> invalidFunctionExceptionType.create(id));
+    CommandFunction function = source.getMinecraftServer().getCommandFunctionManager().getFunction(id)
+        .orElseThrow(() -> invalidFunctionExceptionType.create(id));
 
     for (CommandFunction.Element element : function.getElements()) {
       source.sendFeedback(represent(element), false);

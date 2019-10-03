@@ -5,6 +5,8 @@
  */
 package com.github.liachmodded.loquat.mixin;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.github.liachmodded.loquat.Loquat;
 import com.github.liachmodded.loquat.LoquatConvention;
 import com.github.liachmodded.loquat.LoquatServer;
@@ -17,6 +19,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerTask;
 import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.world.level.LevelProperties;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -30,6 +34,7 @@ public abstract class ServerMixin extends NonBlockingThreadExecutor<ServerTask> 
   @Shadow
   @Final
   private ResourcePackContainerManager<ResourcePackContainer> dataPackContainerManager;
+  @Nullable
   private LoquatConvention convention;
 
   public ServerMixin(String string_1) {
@@ -48,7 +53,7 @@ public abstract class ServerMixin extends NonBlockingThreadExecutor<ServerTask> 
 
   @Override
   public LoquatConvention getConvention() {
-    return convention;
+    return checkNotNull(convention);
   }
 
   @Override

@@ -25,7 +25,11 @@ public final class DataPackEditor {
     this.path = path;
     this.description = new LiteralText("");
   }
-  
+
+  public String getName() {
+    return name;
+  }
+
   public void setDescription(Text text) {
     this.description = text;
   }

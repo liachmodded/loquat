@@ -5,6 +5,8 @@
  */
 package com.github.liachmodded.loquat;
 
+import static net.minecraft.server.command.CommandManager.literal;
+
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -23,7 +25,7 @@ public final class CommandHandler {
 
   public CommandHandler(Loquat mod) {
     this.mod = mod;
-    this.root = LiteralArgumentBuilder.<ServerCommandSource>literal(Loquat.ID)
+    this.root = literal(Loquat.ID)
         .executes(this::listSubcommands)
         .build();
   }

@@ -12,10 +12,9 @@ import com.github.liachmodded.loquat.nbt.NbtToJsonOperation;
 import com.github.liachmodded.loquat.nbt.UuidCompoundToStringOperation;
 import com.github.liachmodded.loquat.nbt.UuidStringToCompoundOperation;
 import com.github.liachmodded.loquat.resource.ResourceFeature;
-import com.github.liachmodded.loquat.text.RawTextFactory;
+import com.github.liachmodded.loquat.text.NoTranslationTextFactory;
 import com.github.liachmodded.loquat.text.TextFactory;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.server.ServerStartCallback;
 import net.fabricmc.fabric.api.event.server.ServerStopCallback;
 import net.fabricmc.fabric.api.registry.CommandRegistry;
 import net.fabricmc.loader.api.FabricLoader;
@@ -77,7 +76,7 @@ public final class Loquat implements ModInitializer {
   public void onInitialize() {
     this.modLoader = FabricLoader.getInstance();
     this.modContainer = modLoader.getModContainer(ID).orElseThrow(() -> new IllegalStateException("loquat not loaded!"));
-    this.textFactory = new RawTextFactory();
+    this.textFactory = new NoTranslationTextFactory();
     this.commandHandler = new CommandHandler(this);
     CommandRegistry.INSTANCE.register(false, commandHandler::registerCommands);
 

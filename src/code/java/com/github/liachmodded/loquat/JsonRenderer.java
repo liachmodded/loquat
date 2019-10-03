@@ -6,6 +6,11 @@
 package com.github.liachmodded.loquat;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
+import static net.minecraft.command.arguments.IdentifierArgumentType.getIdentifier;
+import static net.minecraft.command.arguments.IdentifierArgumentType.identifier;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -26,7 +31,6 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
@@ -36,7 +40,7 @@ public final class JsonRenderer {
   private final CommandHandler commandHandler;
   private final Collection<String> dataTypes;
   private final DynamicCommandExceptionType ioExceptionType = new DynamicCommandExceptionType(
-      ioe -> new LiteralText(((IOException) ioe).getMessage()));
+      message -> new LiteralText(message.toString()));
 
   public JsonRenderer(Loquat mod) {
     commandHandler = mod.getCommandHandler();
@@ -50,20 +54,20 @@ public final class JsonRenderer {
   }
 
   private void registerCommand() {
-    CommandNode<ServerCommandSource> modifyDataType = CommandManager.literal("json-data-type")
+    CommandNode<ServerCommandSource> modifyDataType = literal("json-data-type")
         .then(
-            CommandManager.literal("add")
+            literal("add")
                 .then(
-                    CommandManager.argument("data-type", StringArgumentType.word())
+                    argument("data-type", word())
                         .executes(this::addJsonDataType)
                         .build()
                 )
                 .build()
         )
         .then(
-            CommandManager.literal("remove")
+            literal("remove")
                 .then(
-                    CommandManager.argument("data-type", StringArgumentType.word())
+                    argument("data-type", word())
                         .executes(this::removeJsonDataType)
                         .build()
                 )
@@ -71,9 +75,9 @@ public final class JsonRenderer {
         )
         .build();
 
-    CommandNode<ServerCommandSource> node = CommandManager.literal("json")
+    CommandNode<ServerCommandSource> node = literal("json")
         .then(
-            CommandManager.argument("location", IdentifierArgumentType.identifier())
+            argument("location", identifier())
                 .suggests(this::suggestResources)
         )
         .executes(this::executeJson)
@@ -113,13 +117,13 @@ public final class JsonRenderer {
   }
 
   private int executeJson(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-    Identifier id = IdentifierArgumentType.getIdentifier(context, "location");
+    Identifier id = getIdentifier(context, "location");
     ServerCommandSource source = context.getSource();
     try (Resource resource = source.getMinecraftServer().getDataManager().getResource(id)) {
       JsonElement jsonElement = new Gson().fromJson(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8), JsonElement.class);
       jsonElement.getAsString();
     } catch (IOException ex) {
-      throw ioExceptionType.create(ex);
+      throw ioExceptionType.create(ex.getMessage());
     }
 
     return SINGLE_SUCCESS;

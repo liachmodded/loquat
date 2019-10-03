@@ -26,7 +26,7 @@ import net.minecraft.text.Texts;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
-public final class RawTextFactory implements TextFactory {
+public final class NoTranslationTextFactory implements TextFactory {
 
   @Override
   public <T> Text renderCommandChain(String input, T context, Function<? super T, ? extends T> childGetter,
@@ -141,5 +141,22 @@ public final class RawTextFactory implements TextFactory {
   @Override
   public Text makeError(Text original) {
     return (new LiteralText("")).append(original).formatted(Formatting.RED);
+  }
+
+  @Override
+  public Text reportExistingEditorName(Object name) {
+    return new LiteralText("Pack editor ").append(Texts.bracketed(new LiteralText(name.toString())).formatted(Formatting.GREEN))
+        .append(" already exists!");
+  }
+  
+  @Override
+  public Text reportNonExistentEditorName(Object name) {
+    return new LiteralText("Pack editor ").append(Texts.bracketed(new LiteralText(name.toString())).formatted(Formatting.GREEN))
+        .append(" does not exist!");
+  }
+
+  @Override
+  public Text reportNoChosenEditor() {
+    return new LiteralText("No pack editor was chosen!");
   }
 }

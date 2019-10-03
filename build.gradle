@@ -28,6 +28,10 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modCompile("net.fabricmc.fabric-api:fabric-api:${project.apiVersion}")
 
+    compileOnly('org.checkerframework:checker-qual:2.9.0') {
+        exclude module: "guava"
+    }
+
     annotationProcessor 'net.fabricmc:fabric-mixin-compile-extensions:0.1.0.+'
 }
 

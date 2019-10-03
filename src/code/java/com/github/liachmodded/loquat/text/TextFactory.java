@@ -53,5 +53,9 @@ public interface TextFactory {
   Text reportInvalidPipelineOperator(Object id);
 
   Text makeError(Text original);
+  
+  Text reportExistingEditorName(Object name);
+  Text reportNonExistentEditorName(Object name);
+  Text reportNoChosenEditor();
 
 }

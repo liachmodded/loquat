@@ -29,7 +29,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
   private MinecraftServer server;
   @Shadow
   public ServerPlayerEntity player;
-  private boolean collectingFunction;
 
   @Redirect(method = "onChatMessage(Lnet/minecraft/server/network/packet/ChatMessageC2SPacket;)V",
       at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/StringUtils;normalizeSpace(Ljava/lang/String;)Ljava/lang/String;", remap = false))

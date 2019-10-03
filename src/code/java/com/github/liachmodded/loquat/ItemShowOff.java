@@ -5,6 +5,11 @@
  */
 package com.github.liachmodded.loquat;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
+import static com.mojang.brigadier.arguments.StringArgumentType.word;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
+
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -20,7 +25,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
@@ -36,10 +40,10 @@ public final class ItemShowOff {
   }
 
   private void init() {
-    LiteralCommandNode<ServerCommandSource> node = CommandManager.literal("showoff")
+    LiteralCommandNode<ServerCommandSource> node = literal("showoff")
         .executes(this::executeShowoffSlot)
         .then(
-            CommandManager.argument("slot", StringArgumentType.word())
+            argument("slot", word())
                 .suggests(this::suggestSlots)
                 .executes(this::executeShowoffSlot)
         )
@@ -54,12 +58,12 @@ public final class ItemShowOff {
   private int executeShowoffSlot(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
     EquipmentSlot slot;
     try {
-      slot = EquipmentSlot.byName(StringArgumentType.getString(context, "slot").toLowerCase(Locale.ROOT));
+      slot = EquipmentSlot.byName(getString(context, "slot").toLowerCase(Locale.ROOT));
     } catch (IllegalArgumentException ex) {
       slot = EquipmentSlot.MAINHAND;
     }
     ServerCommandSource source = context.getSource();
-    Entity entity = source.getEntity();
+    Entity entity = source.getEntityOrThrow();
     if (!(entity instanceof LivingEntity)) {
       throw ServerCommandSource.REQUIRES_ENTITY_EXCEPTION.create();
     }
